@@ -1,0 +1,59 @@
+﻿@model CourseWork.Web.Models.Item.ItemViewModel
+@using Microsoft.AspNetCore.Mvc.Localization
+@using CourseWork.Core.AdditionalFields
+
+@inject IViewLocalizer Localizer
+
+<div class="container">
+    <div class="row">
+        <div class="col-9">
+            <h5>@Model.Name</h5>
+            <input type="hidden" asp-for="@Model.Id" />
+            @foreach (var field in Model.Fields)
+            {
+                <div class="d-flex w-100 justify-content-between">
+                    <p class="mb-1">@field.GetFieldName()</p>
+                    <p class="mb-1">@field.GetFieldValue()</p>
+                </div>
+            }
+            <div class="d-flex w-100 justify-content-between mb-1">
+                <p class="mb-1">@Localizer["Likes"] @Html.DisplayFor(model => Model.Likes)</p>
+                <a asp-controller="Item" asp-action="Like" asp-route-itemId="@Model.Id" class="btn btn-primary">@Localizer["Like"]</a>
+            </div>
+            <form asp-controller="Item" asp-action="Comment" asp-route-itemId="@Model.Id">
+                <div class="form-group">
+                    <label>@Localizer["Comment"]</label>
+                    <input class="form-control" placeholder="@Localizer["CommentPlaceholder"]" name="commentText" />
+                    <button type="submit" class="btn btn-primary mt-1">@Localizer["Submit"]</button>
+                </div>
+            </form>
+            <ul class="list-group">
+                @foreach (var comment in Model.Comments)
+                {
+                    <li class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between mb-1">
+                            <p>@Html.DisplayFor(model => comment.Username)</p>
+                            <p>@Html.DisplayFor(model => comment.Date)</p>
+                        </div>
+                        <p>@Html.DisplayFor(model => comment.Text)</p>
+                    </li>
+                }
+            </ul>
+        </div>
+        <div class="col-3">
+            <form asp-controller="Item" asp-action="Tag" asp-route-itemId="@Model.Id">
+                <div class="w-100 mb-1">
+                    @Localizer["Tag"] <input type="text" id="tagName" />
+                </div>
+                <input type="submit" class="btn btn-primary w-100" value="@Localizer["Add"]"/>
+            </form>
+            @foreach (var tag in Model.Tags)
+            {
+                <a class="list-group-item list-group-item-action flex-column align-items-start"
+                   asp-controller="Items" asp-action="Index" asp-route-searchString="@tag.Name">
+                    @Html.DisplayFor(model => tag.Name)
+                </a>
+            }
+        </div>
+    </div>
+</div>
